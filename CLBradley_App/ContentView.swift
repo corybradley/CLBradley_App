@@ -8,14 +8,27 @@
 import SwiftUI
 
 struct ContentView: View {
+    @StateObject private var store = ArtworkStore()
+
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+        TabView {
+            GalleryView()
+                .tabItem {
+                    Label("Gallery", systemImage: "rectangle.grid.2x2")
+                }
+
+            AboutView()
+                .tabItem {
+                    Label("About", systemImage: "person")
+                }
+
+            InstagramView()
+                .tabItem {
+                    Label("Instagram", systemImage: "camera")
+                }
         }
-        .padding()
+        .tint(.primary)
+        .environmentObject(store)
     }
 }
 
