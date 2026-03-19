@@ -25,10 +25,6 @@ struct AboutView: View {
     @State private var showEasterEgg = false
     @State private var tapCount = 0
 
-    private let version: String = {
-        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
-    }()
-
     var body: some View {
         NavigationStack {
             ZStack {
