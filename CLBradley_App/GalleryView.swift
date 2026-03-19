@@ -53,7 +53,7 @@ struct GalleryView: View {
                         .padding(.bottom, 100)
                     }
                 }
-                .background(Color.white)
+                .background(Color(.systemBackground))
                 .toolbar {
                     ToolbarItem(placement: .principal) {
                         Text("C . L . B R A D L E Y")
@@ -61,6 +61,7 @@ struct GalleryView: View {
                             .tracking(3)
                             .foregroundColor(.primary)
                     }
+
                 }
                 .navigationBarTitleDisplayMode(.inline)
             }
@@ -111,7 +112,7 @@ private struct NewestCard: View {
 
             Text(artwork.title)
                 .font(.headline)
-                .foregroundStyle(Color.black)
+                .foregroundStyle(Color.primary)
 
             Text(artwork.mediumAndSize)
                 .font(.caption)

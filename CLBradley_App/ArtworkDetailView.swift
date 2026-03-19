@@ -24,7 +24,7 @@ struct ArtworkDetailView: View {
 
     var body: some View {
         ZStack(alignment: .topLeading) {
-            Color.white.ignoresSafeArea()
+            Color(.systemBackground).ignoresSafeArea()
 
             VStack(spacing: 0) {
                 // Signature header — same as every other page
@@ -36,7 +36,7 @@ struct ArtworkDetailView: View {
                         .frame(maxWidth: .infinity)
                 }
                 .frame(height: 52)
-                .background(Color.white)
+                .background(Color(.systemBackground))
 
                 Divider()
 
@@ -70,6 +70,8 @@ struct ArtworkDetailView: View {
 private struct DetailPage: View {
     let artwork: Artwork
     @State private var showMetadata = false
+    @State private var scale: CGFloat = 1.0
+    @State private var lastScale: CGFloat = 1.0
 
     var body: some View {
         GeometryReader { screen in
@@ -80,6 +82,23 @@ private struct DetailPage: View {
                             .resizable()
                             .scaledToFit()
                             .frame(width: screen.size.width)
+                            .scaleEffect(scale, anchor: .center)
+                            .simultaneousGesture(
+                                MagnificationGesture()
+                                    .onChanged { value in
+                                        let delta = value / lastScale
+                                        lastScale = value
+                                        scale = min(max(scale * delta, 1.0), 2.0)
+                                    }
+                                    .onEnded { _ in
+                                        lastScale = 1.0
+                                        withAnimation(.spring(response: 0.35,
+                                                              dampingFraction: 0.75)) {
+                                            scale = min(max(scale, 1.0), 2.0)
+                                        }
+                                    }
+                            )
+                            .zIndex(1)
                     } else {
                         Rectangle()
                             .fill(Color(.systemGray6))
@@ -95,7 +114,7 @@ private struct DetailPage: View {
                     VStack(alignment: .leading, spacing: 0) {
                         Text(artwork.title)
                             .font(.system(size: 24, weight: .bold))
-                            .foregroundStyle(Color.black)
+                            .foregroundStyle(Color.primary)
                             .frame(maxWidth: .infinity, alignment: .leading)
                             .padding(.bottom, 10)
 
@@ -115,12 +134,20 @@ private struct DetailPage: View {
                                 .foregroundColor(Color(.systemGray3))
                                 .padding(.top, 8)
                         }
+
+                        Button(action: shareArtwork) {
+                            Label("Share", systemImage: "square.and.arrow.up")
+                                .font(.system(size: 13, weight: .regular))
+                                .foregroundColor(Color(.systemGray))
+                        }
+                        .padding(.top, 16)
                     }
                     .frame(maxWidth: .infinity, alignment: .leading)
                     .padding(.horizontal, 24)
                     .padding(.top, 24)
                     .padding(.bottom, 40)
                     .opacity(showMetadata ? 1 : 0)
+                    .zIndex(0)
                     .onAppear {
                         DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
                             withAnimation(.easeInOut(duration: 0.45)) {
@@ -138,7 +165,23 @@ private struct DetailPage: View {
                     alignment: .center
                 )
             }
-            .background(Color.white)
+            .background(Color(.systemBackground))
+        }
+    }
+
+    func shareArtwork() {
+        guard let image = UIImage(named: artwork.imageName)
+            else { return }
+        let text = "\(artwork.title) by C.L. Bradley"
+        let activityVC = UIActivityViewController(
+            activityItems: [image, text],
+            applicationActivities: nil
+        )
+        if let windowScene = UIApplication.shared
+            .connectedScenes.first as? UIWindowScene,
+           let rootVC = windowScene.windows
+               .first?.rootViewController {
+            rootVC.present(activityVC, animated: true)
         }
     }
 }
@@ -149,4 +192,17 @@ private struct DetailPage: View {
         allArtworks: ArtworkStore().all,
         onDismiss: {}
     )
+}
+
+// MARK: - Conditional modifier helper
+
+extension View {
+    @ViewBuilder
+    func `if`<Transform: View>(
+        _ condition: Bool,
+        transform: (Self) -> Transform
+    ) -> some View {
+        if condition { transform(self) }
+        else { self }
+    }
 }

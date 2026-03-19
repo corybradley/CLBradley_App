@@ -22,13 +22,21 @@ struct AboutView: View {
         overall Nice Guy.
         """
 
+    @State private var showEasterEgg = false
+    @State private var tapCount = 0
+
+    private let version: String = {
+        Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "1.0"
+    }()
+
     var body: some View {
         NavigationStack {
+            ZStack {
             ScrollView {
                 VStack(alignment: .center, spacing: 0) {
                     Text("C . L . B R A D L E Y")
                         .font(.custom("CLBRADLEY", size: 32))
-                        .foregroundStyle(Color.black)
+                        .foregroundStyle(Color.primary)
                         .tracking(3)
                         .frame(maxWidth: .infinity, alignment: .center)
                         .padding(.bottom, 8)
@@ -77,7 +85,59 @@ struct AboutView: View {
                 .padding(.horizontal, 28)
                 .padding(.top, 40)
             }
-            .background(Color.white)
+            .background(Color(.systemBackground))
+
+            VStack {
+                Spacer()
+                Image("logo_transparent")
+                    .renderingMode(.original)
+                    .resizable()
+                    .frame(width: 44, height: 44)
+                    .padding(.bottom, 48)
+                    .gesture(
+                        LongPressGesture(minimumDuration: 0.6)
+                            .onEnded { _ in
+                                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+                                showEasterEgg = true
+                            }
+                    )
+            }
+
+            // Easter egg overlay
+            if showEasterEgg {
+                Color.black.opacity(0.4)
+                    .ignoresSafeArea()
+                    .onTapGesture { showEasterEgg = false }
+
+                VStack(spacing: 8) {
+                    Text("C.L. Bradley")
+                        .font(.custom("CLBRADLEY", size: 22))
+                        .foregroundColor(.white)
+
+                    Text("Designed & built by Cory Bradley")
+                        .font(.system(size: 11, weight: .regular))
+                        .foregroundColor(Color(red: 0.533, green: 0.533, blue: 0.533)) // #888888
+
+                    Text("iOS · SwiftUI · 2026")
+                        .font(.system(size: 10, weight: .regular))
+                        .foregroundColor(Color(red: 0.400, green: 0.400, blue: 0.400)) // #666666
+
+                    Text("v\(version)")
+                        .font(.system(size: 10, weight: .regular))
+                        .foregroundColor(Color(red: 0.400, green: 0.400, blue: 0.400)) // #666666
+                        .padding(.top, 2)
+                }
+                .padding(.horizontal, 32)
+                .padding(.vertical, 28)
+                .background(
+                    RoundedRectangle(cornerRadius: 16)
+                        .fill(Color(red: 0.102, green: 0.102, blue: 0.102)) // #1A1A1A
+                )
+                .padding(.horizontal, 48)
+                .onTapGesture { showEasterEgg = false }
+            }
+
+            } // ZStack
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("A B O U T")
@@ -85,6 +145,7 @@ struct AboutView: View {
                         .tracking(4)
                         .foregroundColor(.primary)
                 }
+
             }
             .navigationBarTitleDisplayMode(.inline)
         }

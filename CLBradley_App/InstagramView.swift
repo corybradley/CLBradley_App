@@ -36,7 +36,7 @@ struct InstagramView: View {
                 Spacer()
             }
             .frame(maxWidth: .infinity)
-            .background(Color.white)
+            .background(Color(.systemBackground))
             .toolbar {
                 ToolbarItem(placement: .principal) {
                     Text("C . L . B R A D L E Y")
@@ -44,6 +44,7 @@ struct InstagramView: View {
                         .tracking(3)
                         .foregroundColor(.primary)
                 }
+
             }
             .navigationBarTitleDisplayMode(.inline)
         }
