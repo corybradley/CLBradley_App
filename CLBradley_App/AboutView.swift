@@ -122,7 +122,7 @@ struct AboutView: View {
                         .font(.system(size: 10, weight: .regular))
                         .foregroundColor(Color(red: 0.400, green: 0.400, blue: 0.400)) // #666666
 
-                    Text("v\(version)")
+                    Text("V 2.0")
                         .font(.system(size: 10, weight: .regular))
                         .foregroundColor(Color(red: 0.400, green: 0.400, blue: 0.400)) // #666666
                         .padding(.top, 2)
